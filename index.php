@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx; 
 # Create a new Xls Reader
 $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 
@@ -46,9 +47,20 @@ foreach($arraybranch as $branch){
         // echo $totalmaintenancecost. ' current car ' . $currentcar;
         $totalmaintenancecost=$totalmaintenancecost+$totalmaintenancebycar;
     }
+    $arraymaintenancebybranch[]=array($currentbranch,$totalmaintenancecost);
 
-    $arraymaintenancebybranch[$currentbranch]=$totalmaintenancecost;
+    // $arraymaintenancebybranch[$currentbranch]=$totalmaintenancecost;
 }
+$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+$result=$spreadsheet->getSheet(1);
+$result->getStyle('B1:B18')->getNumberFormat()->setFormatCode('#,##0.00');
+
+$result->fromArray(
+    $arraymaintenancebybranch,
+    null,
+    'A2'
+);
+$writer->save("VehicleRouteMovement.xlsx");
 echo json_encode($arraymaintenancebybranch);
 
 // output the data to the console, so you can see what there is.
